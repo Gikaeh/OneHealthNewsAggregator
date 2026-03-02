@@ -1,11 +1,15 @@
+import os
 import re
 import json
 import datetime
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
-PROMED_URL = "https://www.promedmail.org/"
-OUTPUT_PATH = "scrapers/promed_output.html"
+load_dotenv()
+
+PROMED_URL = os.getenv("PROMED_URL", "https://www.promedmail.org/")
+OUTPUT_PATH = os.getenv("ALERTS_PATH", "scrapers/promed_output.html")
 
 
 def fetch_alerts_script(url: str) -> str:

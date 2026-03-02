@@ -1,12 +1,17 @@
+import os
 import json
 import time
 import datetime
 import requests
+from dotenv import load_dotenv
 
-NTFY_TOPIC = "gikaehshopalert"
-NTFY_URL = f"https://ntfy.sh/{NTFY_TOPIC}"
-ALERTS_PATH = "scrapers/promed_output.html"
-PROMED_URL = "https://www.promedmail.org/"
+load_dotenv()
+
+NTFY_TOPIC = os.getenv("NTFY_TOPIC", "alert")
+NTFY_BASE_URL = os.getenv("NTFY_BASE_URL", "https://ntfy.sh")
+NTFY_URL = f"{NTFY_BASE_URL}/{NTFY_TOPIC}"
+ALERTS_PATH = os.getenv("ALERTS_PATH", "scrapers/promed_output.html")
+PROMED_URL = os.getenv("PROMED_URL", "https://www.promedmail.org/")
 
 def send_alert(alert: dict):
     title = alert["Title"]
