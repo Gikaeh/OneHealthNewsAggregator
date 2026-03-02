@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-NTFY_TOPIC = os.getenv("NTFY_TOPIC", "alert")
-NTFY_BASE_URL = os.getenv("NTFY_BASE_URL", "https://ntfy.sh")
+NTFY_TOPIC = os.getenv("NTFY_TOPIC", "alert").strip()
+NTFY_BASE_URL = os.getenv("NTFY_BASE_URL", "https://ntfy.sh").strip()
 NTFY_URL = f"{NTFY_BASE_URL}/{NTFY_TOPIC}"
-ALERTS_PATH = os.getenv("ALERTS_PATH", "scrapers/promed_output.html")
-PROMED_URL = os.getenv("PROMED_URL", "https://www.promedmail.org/")
+ALERTS_PATH = os.getenv("ALERTS_PATH", "scrapers/promed_output.html").strip()
+PROMED_URL = os.getenv("PROMED_URL", "https://www.promedmail.org/").strip()
 
 def send_alert(alert: dict):
     title = alert["Title"]
@@ -22,11 +22,13 @@ def send_alert(alert: dict):
 
     message = f"📍 {locations}\n🦠 {diseases} | {species}\n\n{summary}"
 
+    safe_title = title.encode("ascii", errors="ignore").decode("ascii").strip()
+
     requests.post(
         NTFY_URL,
         data=message.encode("utf-8"),
         headers={
-            "Title": title,
+            "Title": safe_title,
             "Actions": f"view, View on ProMED, {PROMED_URL}, clear=true",
         },
     )
@@ -46,7 +48,7 @@ def main():
         alerts = json.load(f)
 
     if isinstance(alerts, str):
-        requests.post(NTFY_URL, headers={"Title": "ProMED - No Alerts"}, data=alerts)
+        requests.post(NTFY_URL, data=alerts.encode("utf-8"), headers={"Title": "ProMED - No Alerts"})
         return
 
     for alert in reversed(alerts):
